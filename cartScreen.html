@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/3332051f22.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>TeeRex Store</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">TeeRex Store</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/"
+                >Products</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/cartScreen.html"
+                ><i class="fa-solid fa-cart-shopping"></i
+                ><span
+                  id="cartCount"
+                  class="translate-middle badge rounded-pill bg-danger"
+                  >0</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div id="liveAlertPlaceholder"></div>
+      <div class="row">
+        <div class="col-md-8 col-lg-8">
+          <div class="h2">Shopping Cart</div>
+          <div id="item-list"></div>
+        </div>
+        <div class="col-md-4 col-lg-4" id="subTotalSection">
+          <div class="h2 text-center border border-dark rounded py-2 mt-5">
+            Subtotal
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="h5 m-1">Total Item</div>
+            </div>
+            <div class="col-4 m-1 text-end">
+              <span id="totalQty"></span>
+            </div>
+            <div class="col-6 m-1">
+              <div class="h5">Total Price</div>
+            </div>
+            <div class="col-4 m-1 text-end">
+              Rs <span id="totalPrice"></span>
+            </div>
+          </div>
+          <div class="d-grid">
+            <button class="btn btn-dark btn-block m-1">Place Order</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module">
+      import {
+        productList,
+        injectToDOM,
+        filterMenu,
+        filterFunction,
+        saveFiltersToLocalStorage,
+        getFiltersFromLocalStorage,
+        getCartItemsFromLocalStorage,
+        checkedStatus,
+        cartItemPageDom,
+        alertFunction,
+      } from "./main.js";
+
+      let cartItems =
+        getCartItemsFromLocalStorage() != null
+          ? getCartItemsFromLocalStorage()
+          : [];
+
+      let filters =
+        getFiltersFromLocalStorage() !== null
+          ? getFiltersFromLocalStorage()
+          : { color: [], gender: [], price: [], type: [] };
+
+      (async function () {
+        cartItemPageDom(cartItems);
+        document.getElementById("cartCount").innerText = cartItems.length;
+        subTotal();
+      })();
+
+      function removeFromCart(id) {
+        cartItems.forEach((product, ind) => {
+          if (product.id === id) {
+            cartItems.splice(ind, 1);
+            document.getElementById("cartCount").innerText = cartItems.length;
+            localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            cartItemPageDom(cartItems);
+            subTotal();
+            alertFunction("Item removed from cart", "success");
+          }
+        });
+      }
+
+      function subTotal() {
+        let totalqty = 0;
+        let totalPrice = [];
+        cartItems.forEach((ele) => {
+          let qty = document.getElementById(`${ele.id}`).value;
+          let price = parseInt(qty) * parseInt(ele.price);
+          totalqty += parseInt(qty);
+          totalPrice.push(price);
+        });
+        document.getElementById("totalQty").innerText = totalqty;
+        document.getElementById("totalPrice").innerText =
+          totalqty !== 0 ? totalPrice.reduce((acc, item) => acc + item) : 0;
+      }
+
+      function selectQuantity(id) {}
+      window.removeFromCart = removeFromCart;
+      window.selectQuantity = selectQuantity;
+      window.subTotal = subTotal;
+    </script>
+  </body>
+</html>

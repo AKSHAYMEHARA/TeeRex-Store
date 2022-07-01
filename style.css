@@ -1,0 +1,77 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+#filter-section {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+    rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+    rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  height: 83vh;
+  position: sticky;
+  top: 60px;
+  margin-top: 10px;
+  margin-right: 30px;
+  padding: 8px 0;
+  border: 1px solid whitesmoke;
+  border-radius: 20px;
+}
+
+.filter-title {
+  font-weight: bold;
+  margin: 5px;
+}
+.filter-attribute {
+  height: 75px;
+  overflow: auto;
+  padding-left: 5px;
+}
+
+.card {
+  height: 300px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em,
+    rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em,
+    rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+  transition: 0.2s all;
+}
+.card:hover {
+  transform: scale(1.05);
+}
+.card img {
+  height: 200px;
+  width: auto;
+  padding: 5px;
+  border: 1px solid whitesmoke;
+  border-radius: 5px;
+}
+
+/* Cart Page CSS */
+.cart-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 20px;
+}
+#subTotalSection {
+  height: 30vh;
+}
+#liveAlertPlaceholder {
+  position: sticky;
+  top: 60px;
+  z-index: 9;
+  max-width: 500px;
+  left: 30rem;
+}
+@media screen and (min-width: 992px) {
+  #filterButton {
+    display: none;
+  }
+}
+@media screen and (max-width: 992px) {
+  #filter-panel {
+    display: none;
+  }
+}

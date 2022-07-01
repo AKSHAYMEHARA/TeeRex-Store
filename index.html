@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://kit.fontawesome.com/3332051f22.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>TeeRex Store</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">TeeRex Store</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/"
+                >Products</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="./cartScreen.html"
+                ><i class="fa-solid fa-cart-shopping"></i
+                ><span
+                  class="translate-middle badge rounded-pill bg-danger"
+                  id="cartCount"
+                  >0</span
+                ></a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div id="liveAlertPlaceholder"></div>
+      <div class="row">
+        <div class="col-lg-4 d-none d-lg-block"></div>
+        <div class="col-lg-6 col-md-10 col-sm-10 my-1 col-9">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              id="search"
+              placeholder="Search for products..."
+              aria-label="Search Bar"
+              aria-describedby="button-addon2"
+              oninput="searchProduct(this)"
+            />
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-2 my-1 col-sm-2 col-3">
+          <button class="btn btn-dark" id="filterButton">
+            <i class="fa-solid fa-filter"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-3 col-6" id="filter-panel">
+          <div class="row" id="filter-section">
+            <div class="filter-element">
+              <p class="filter-title">Colors</p>
+              <div class="filter-attribute"></div>
+            </div>
+            <div class="filter-element">
+              <p class="filter-title">Gender</p>
+              <div class="filter-attribute"></div>
+            </div>
+            <div class="filter-element">
+              <p class="filter-title">Price</p>
+              <div class="filter-attribute"></div>
+            </div>
+            <div class="filter-element">
+              <p class="filter-title">Type</p>
+              <div class="filter-attribute"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-9 col-md-12">
+          <div class="row" id="product-list"></div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module">
+      import {
+        productList,
+        injectToDOM,
+        filterMenu,
+        filterFunction,
+        saveFiltersToLocalStorage,
+        getFiltersFromLocalStorage,
+        getCartItemsFromLocalStorage,
+        checkedStatus,
+        alertFunction,
+      } from "./main.js";
+
+      let cartItems =
+        getCartItemsFromLocalStorage() != null
+          ? getCartItemsFromLocalStorage()
+          : [];
+
+      let filters =
+        getFiltersFromLocalStorage() !== null
+          ? getFiltersFromLocalStorage()
+          : { color: [], gender: [], price: [], type: [] };
+
+      let productArray;
+      (async function () {
+        productArray = await productList();
+        filterMenu(productArray);
+        let filteredData = filterFunction(productArray, filters);
+        injectToDOM(filteredData);
+        checkedStatus();
+        document.getElementById("cartCount").innerText = cartItems.length;
+      })();
+
+      function checkColor(this1) {
+        let color = this1.value;
+        if (this1.checked) {
+          filters["color"].push(color);
+        } else {
+          var index = filters["color"].indexOf(color);
+          if (index > -1) {
+            filters["color"].splice(index, 1);
+          }
+        }
+        filters["color"] = filters["color"].filter(onlyUnique);
+        let filteredColor = filterFunction(productArray, filters);
+        injectToDOM(filteredColor);
+        saveFiltersToLocalStorage(filters);
+      }
+      function checkGender(this1) {
+        let gender = this1.value;
+        if (this1.checked) {
+          filters["gender"].push(gender);
+        } else {
+          var index = filters["gender"].indexOf(gender);
+          if (index > -1) {
+            filters["gender"].splice(index, 1);
+          }
+        }
+        filters["gender"] = filters["gender"].filter(onlyUnique);
+        let filteredGender = filterFunction(productArray, filters);
+        injectToDOM(filteredGender);
+        saveFiltersToLocalStorage(filters);
+      }
+      function checkPrice(this1) {
+        let price = this1.value;
+        if (this1.checked) {
+          filters["price"].push(price);
+        } else {
+          var index = filters["price"].indexOf(price);
+          if (index > -1) {
+            filters["price"].splice(index, 1);
+          }
+        }
+        filters["price"] = filters["price"].filter(onlyUnique);
+        let filteredPrice = filterFunction(productArray, filters);
+        injectToDOM(filteredPrice);
+        saveFiltersToLocalStorage(filters);
+      }
+      function checkType(this1) {
+        let type = this1.value;
+        if (this1.checked) {
+          filters["type"].push(type);
+        } else {
+          var index = filters["type"].indexOf(type);
+          if (index > -1) {
+            filters["type"].splice(index, 1);
+          }
+        }
+        filters["type"] = filters["type"].filter(onlyUnique);
+        let filteredType = filterFunction(productArray, filters);
+        injectToDOM(filteredType);
+        saveFiltersToLocalStorage(filters);
+      }
+
+      function searchProduct(this1) {
+        function capitalizeFirstLetter(string) {
+          return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        let query = capitalizeFirstLetter(this1.value);
+        const result = productArray.filter(
+          (key) =>
+            key.color.includes(query) ||
+            key.name.includes(query) ||
+            key.type.includes(query) ||
+            key.gender.includes(query)
+        );
+        injectToDOM(result);
+      }
+
+      function addToCart(productId) {
+        const found = cartItems.findIndex((obj) => {
+          return obj.id === productId;
+        });
+        if (found === -1) {
+          productArray.forEach((ele) => {
+            if (ele.id === productId) {
+              cartItems.push(ele);
+              document.getElementById("cartCount").innerText = cartItems.length;
+              localStorage.setItem("cartItems", JSON.stringify(cartItems));
+              alertFunction("Item added in cart", "success");
+            }
+          });
+        } else {
+          alertFunction("Item already in cart", "danger");
+        }
+      }
+
+      function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+      }
+      window.checkColor = checkColor;
+      window.checkGender = checkGender;
+      window.checkPrice = checkPrice;
+      window.checkType = checkType;
+      window.searchProduct = searchProduct;
+      window.addToCart = addToCart;
+    </script>
+  </body>
+  <script>
+    document.getElementById("filterButton").onclick = function () {
+      showFilter();
+    };
+
+    function showFilter() {
+      var x = document.getElementById("filter-panel");
+      if (x.style.display === "none" || x.style.display === "") {
+        x.style.display = "block";
+        window.onscroll = function () {
+          window.scrollTo(0, 0);
+        };
+      } else {
+        x.style.display = "none";
+      }
+    }
+  </script>
+</html>
